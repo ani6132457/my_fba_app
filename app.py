@@ -43,13 +43,16 @@ if uploaded_file:
     # アップロードCSV読み込み（6行目がヘッダー）
     df_csv = pd.read_csv(uploaded_file, skiprows=5)
 
+    # SKU前処理（空白など除去）
+    df_csv['SKU'] = df_csv['SKU'].astype(str).str.strip()
+
     # SKUマスタとマージ
     merged_df = df_csv.merge(df_master, left_on="SKU", right_on="AmazonSKU", how="left")
 
-    # 在庫アップロード用CSV出力
-    stock_df = merged_df[merged_df['SKU'].notna()][["テンポスターSKU", "数量"]].copy()
+    # 在庫アップロード用CSV出力（テンポスターSKUがなければ元のSKUを使う）
+    merged_df["商品コード"] = merged_df["テンポスターSKU"].combine_first(merged_df["SKU"])
+    stock_df = merged_df[["商品コード", "数量"]].copy()
     stock_df["数量"] = stock_df["数量"].apply(lambda x: -int(x) if pd.notna(x) else "")
-    stock_df.columns = ["商品コード", "想定在庫数"]
 
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
