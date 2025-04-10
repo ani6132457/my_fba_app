@@ -12,13 +12,6 @@ uploaded_file = st.file_uploader("CSVファイルをアップロードしてく�
 sku_master_path = "data/sku_master.xlsx"
 df_master = pd.read_excel(sku_master_path)
 
-# HTML保存と表示リンク作成
-def save_html_and_get_url(html):
-    html_path = "/tmp/picking_list.html"
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(html)
-    return f"<a href='picking_list.html' target='_blank'>🖨 ピッキングリストを別タブで開く</a>"
-
 # 印刷用HTMLを生成
 def generate_html_table(df):
     df = df[df['SKU'].notna() & df['商品名_x'].notna()]
@@ -61,7 +54,9 @@ if uploaded_file:
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
     st.download_button("📥 在庫アップロードCSVダウンロード", csv_buffer.getvalue(), file_name="在庫アップロードデータ.csv", mime="text/csv")
 
-    # 印刷表示リンク（別タブ）
-    st.subheader("🖨 ピッキングリスト（別タブで開く）")
+    # 印刷表示（Expander内でHTML表示）
+    st.subheader("🖨 ピッキングリスト（印刷用）")
+    st.markdown("Ctrl + Pで印刷できます。A4縦、1ページ20件程度が目安です。")
     html_content = generate_html_table(merged_df)
-    st.components.v1.html(save_html_and_get_url(html_content), height=50, scrolling=False)
+    with st.expander("🖨 ピッキングリストを開く（クリックで展開）"):
+        st.components.v1.html(html_content, height=1200, scrolling=True)
