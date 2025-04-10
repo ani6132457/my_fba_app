@@ -35,7 +35,7 @@ def generate_auto_print_html(df):
         t1 = row['タイプ1'] if pd.notna(row['タイプ1']) else ''
         t2 = row['タイプ2'] if pd.notna(row['タイプ2']) else ''
         html += f"<tr><td>{row['SKU']}</td><td class='wrap'>{row['商品名_x']}</td><td>{row['数量']}</td><td class='nowrap'>{t1}</td><td class='nowrap'>{t2}</td></tr>"
-    html += "</table></body></html>"
+    html += f"</table><!-- {uuid.uuid4()} --></body></html>"
     return html
 
 if uploaded_file:
@@ -58,5 +58,4 @@ if uploaded_file:
     st.subheader("🖨 ワンクリック印刷：ピッキングリスト")
     if st.button("📄 ピッキングリストを印刷"):
         html_content = generate_auto_print_html(merged_df)
-        unique_key = str(uuid.uuid4())  # 一意なkeyを毎回生成
-        st.components.v1.html(html_content, height=1500, scrolling=True, key=unique_key)
+        st.components.v1.html(html_content, height=1500, scrolling=True)
