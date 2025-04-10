@@ -18,6 +18,7 @@ df_master = pd.read_excel(sku_master_path)
 # 印刷用HTML（自動で印刷ダイアログが開く）
 def generate_auto_print_html(df):
     df = df[df['SKU'].notna() & df['商品名_x'].notna()]
+    df = df.sort_values("SKU")
     html = """
     <html><head><meta charset='utf-8'>
     <script>window.onload = function() { window.print(); }</script>
