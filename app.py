@@ -54,7 +54,7 @@ if uploaded_file:
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
 
-    # 日付＋時間付きファイル名
+    # 日付＋24時間表記の時間付きファイル名
     now = datetime.now().strftime('%Y-%m-%d_%H-%M')
     file_name = f"在庫アップロードデータ_{now}.csv"
 
