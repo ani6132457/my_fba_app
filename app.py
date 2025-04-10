@@ -62,8 +62,8 @@ if uploaded_file:
     stock_df = merged_df[["商品コード", "数量"]].copy()
     stock_df["数量"] = stock_df["数量"].apply(safe_negate)
 
-    # nanを空文字に完全に置換
-    stock_df.replace({np.nan: ""}, inplace=True)
+    # nanを空文字に完全に置換し、文字列に変換
+    stock_df = stock_df.where(pd.notna(stock_df), "").astype(str)
 
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
