@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 st.set_page_config(layout="wide")
 st.title("FBA業務支援アプリ（CSV出力＋印刷表示）")
@@ -54,8 +54,9 @@ if uploaded_file:
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
 
-    # 日付＋24時間表記の時間付きファイル名
-    now = datetime.now().strftime('%Y-%m-%d_%H-%M')
+    # JST（日本時間）で現在時刻を取得してファイル名に使用
+    JST = timezone(timedelta(hours=9))
+    now = datetime.now(JST).strftime('%Y-%m-%d_%H-%M')
     file_name = f"在庫アップロードデータ_{now}.csv"
 
     st.download_button("📥 在庫アップロードCSVダウンロード", csv_buffer.getvalue(), file_name=file_name, mime="text/csv")
