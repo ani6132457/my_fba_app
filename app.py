@@ -57,8 +57,12 @@ if uploaded_file:
     # SKUマスタとマージ
     merged_df = df_csv.merge(df_master, left_on="SKU", right_on="AmazonSKU", how="left")
 
-    # 在庫アップロード用CSV出力（テンポスターSKUがなければ元のSKUを使う）
-    merged_df["商品コード"] = merged_df["テンポスターSKU"].combine_first(merged_df["SKU"])
+    # Excelと同様のIF＋XLOOKUPロジックの再現
+    merged_df["商品コード"] = merged_df.apply(
+        lambda row: "" if row["SKU"] == "" else (row["テンポスターSKU"] if pd.notna(row["テンポスターSKU"]) else row["SKU"]),
+        axis=1
+    )
+
     stock_df = merged_df[["商品コード", "数量"]].copy()
     stock_df["数量"] = stock_df["数量"].apply(safe_negate)
 
