@@ -12,20 +12,19 @@ uploaded_file = st.file_uploader("CSVファイルをアップロードしてく�
 sku_master_path = "data/sku_master.xlsx"
 df_master = pd.read_excel(sku_master_path)
 
-# 印刷用HTMLを生成
-def generate_html_table(df):
+# 印刷用HTML（自動で印刷ダイアログが開く）
+def generate_auto_print_html(df):
     df = df[df['SKU'].notna() & df['商品名_x'].notna()]
     html = """
     <html><head><meta charset='utf-8'>
+    <script>window.onload = function() { window.print(); }</script>
     <style>
-    @media print {
-        body { font-family: 'Yu Gothic', sans-serif; font-size: 10pt; }
-        table { width: 100%; border-collapse: collapse; page-break-after: always; }
-        th, td { border: 1px solid #333; padding: 4px; }
-        th { background-color: #f0f0f0; }
-        td.wrap { word-wrap: break-word; white-space: normal; }
-        td.nowrap { white-space: nowrap; }
-    }
+    body { font-family: 'Yu Gothic', sans-serif; font-size: 10pt; }
+    table { width: 100%; border-collapse: collapse; page-break-after: always; }
+    th, td { border: 1px solid #333; padding: 4px; }
+    th { background-color: #f0f0f0; }
+    td.wrap { word-wrap: break-word; white-space: normal; }
+    td.nowrap { white-space: nowrap; }
     </style></head><body>
     <h3>ピッキングリスト</h3>
     <table>
@@ -54,9 +53,8 @@ if uploaded_file:
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
     st.download_button("📥 在庫アップロードCSVダウンロード", csv_buffer.getvalue(), file_name="在庫アップロードデータ.csv", mime="text/csv")
 
-    # 印刷表示（Expander内でHTML表示）
-    st.subheader("🖨 ピッキングリスト（印刷用）")
-    st.markdown("Ctrl + Pで印刷できます。A4縦、1ページ20件程度が目安です。")
-    html_content = generate_html_table(merged_df)
-    with st.expander("🖨 ピッキングリストを開く（クリックで展開）"):
-        st.components.v1.html(html_content, height=1200, scrolling=True)
+    # 印刷用ピッキングリストを表示（印刷ダイアログ自動起動）
+    st.subheader("🖨 ワンクリック印刷：ピッキングリスト")
+    if st.button("📄 ピッキングリストを印刷"):
+        html_content = generate_auto_print_html(merged_df)
+        st.components.v1.html(html_content, height=1500, scrolling=True)
