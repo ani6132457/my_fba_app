@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import uuid
+from datetime import datetime
 
 st.set_page_config(layout="wide")
 st.title("FBA業務支援アプリ（CSV出力＋印刷表示）")
@@ -52,7 +53,12 @@ if uploaded_file:
 
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
-    st.download_button("📥 在庫アップロードCSVダウンロード", csv_buffer.getvalue(), file_name="在庫アップロードデータ.csv", mime="text/csv")
+
+    # 日付＋時間付きファイル名
+    now = datetime.now().strftime('%Y-%m-%d_%H-%M')
+    file_name = f"在庫アップロードデータ_{now}.csv"
+
+    st.download_button("📥 在庫アップロードCSVダウンロード", csv_buffer.getvalue(), file_name=file_name, mime="text/csv")
 
     # 印刷用ピッキングリストを表示（印刷ダイアログ自動起動）
     st.subheader("🖨 ワンクリック印刷：ピッキングリスト")
