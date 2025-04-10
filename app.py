@@ -3,6 +3,7 @@ import pandas as pd
 from io import BytesIO
 import uuid
 from datetime import datetime, timedelta, timezone
+import numpy as np
 
 st.set_page_config(layout="wide")
 st.title("FBA業務支援アプリ（CSV出力＋印刷表示）")
@@ -61,9 +62,8 @@ if uploaded_file:
     stock_df = merged_df[["商品コード", "数量"]].copy()
     stock_df["数量"] = stock_df["数量"].apply(safe_negate)
 
-    # nanを空文字に置換し、文字列化
-    stock_df["商品コード"] = stock_df["商品コード"].fillna("").astype(str)
-    stock_df["数量"] = stock_df["数量"].fillna("").astype(str)
+    # nanを空文字に完全に置換
+    stock_df.replace({np.nan: ""}, inplace=True)
 
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
