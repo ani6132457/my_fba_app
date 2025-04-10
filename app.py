@@ -69,6 +69,9 @@ if uploaded_file:
     # 文字列"nan"、np.nan、NaNを完全に空文字に置換
     stock_df = stock_df.replace(["nan", "NaN", np.nan], "").astype(str)
 
+    # 空白の行（商品コード・数量が両方空）を削除
+    stock_df = stock_df[~((stock_df["商品コード"] == "") & (stock_df["数量"] == ""))]
+
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
 
