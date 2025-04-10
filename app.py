@@ -39,6 +39,13 @@ def generate_auto_print_html(df):
     html += f"</table><!-- {uuid.uuid4()} --></body></html>"
     return html
 
+# 数量のマイナス変換（安全処理）
+def safe_negate(value):
+    try:
+        return -int(value)
+    except:
+        return ""
+
 if uploaded_file:
     # アップロードCSV読み込み（6行目がヘッダー）
     df_csv = pd.read_csv(uploaded_file, skiprows=5)
@@ -52,7 +59,7 @@ if uploaded_file:
     # 在庫アップロード用CSV出力（テンポスターSKUがなければ元のSKUを使う）
     merged_df["商品コード"] = merged_df["テンポスターSKU"].combine_first(merged_df["SKU"])
     stock_df = merged_df[["商品コード", "数量"]].copy()
-    stock_df["数量"] = stock_df["数量"].apply(lambda x: -int(x) if pd.notna(x) else "")
+    stock_df["数量"] = stock_df["数量"].apply(safe_negate)
 
     csv_buffer = BytesIO()
     stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
