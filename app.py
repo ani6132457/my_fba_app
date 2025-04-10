@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
+import uuid
 
 st.set_page_config(layout="wide")
 st.title("FBA業務支援アプリ（CSV出力＋印刷表示）")
@@ -57,4 +58,5 @@ if uploaded_file:
     st.subheader("🖨 ワンクリック印刷：ピッキングリスト")
     if st.button("📄 ピッキングリストを印刷"):
         html_content = generate_auto_print_html(merged_df)
-        st.components.v1.html(html_content, height=1500, scrolling=True)
+        unique_key = str(uuid.uuid4())  # 一意なkeyを毎回生成
+        st.components.v1.html(html_content, height=1500, scrolling=True, key=unique_key)
