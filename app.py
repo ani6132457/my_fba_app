@@ -32,12 +32,22 @@ def generate_auto_print_html(df):
     </style></head><body>
     <h3>ピッキングリスト</h3>
     <table>
-    <tr><th style='width:15%'>SKU</th><th style='width:45%'>商品名</th><th style='width:10%'>数量</th><th style='width:15%'>タイプ1</th><th style='width:15%'>タイプ2</th></tr>
+    <tr>
+        <th style='width:15%'>SKU</th>
+        <th style='width:30%'>商品名</th>
+        <th style='width:10%'>ASIN</th>
+        <th style='width:10%'>FNSKU</th>
+        <th style='width:10%'>数量</th>
+        <th style='width:10%'>タイプ1</th>
+        <th style='width:15%'>タイプ2</th>
+    </tr>
     """
     for _, row in df.iterrows():
         t1 = row['タイプ1'] if pd.notna(row['タイプ1']) else ''
         t2 = row['タイプ2'] if pd.notna(row['タイプ2']) else ''
-        html += f"<tr><td>{row['SKU']}</td><td class='wrap'>{row['商品名_x']}</td><td>{row['数量']}</td><td class='nowrap'>{t1}</td><td class='nowrap'>{t2}</td></tr>"
+        asin = row['ASIN'] if pd.notna(row['ASIN']) else ''
+        fnsku = row['FNSKU'] if pd.notna(row['FNSKU']) else ''
+        html += f"<tr><td>{row['SKU']}</td><td class='wrap'>{row['商品名_x']}</td><td>{asin}</td><td>{fnsku}</td><td>{row['数量']}</td><td class='nowrap'>{t1}</td><td class='nowrap'>{t2}</td></tr>"
     html += f"</table><!-- {uuid.uuid4()} --></body></html>"
     return html
 
