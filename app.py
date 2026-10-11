@@ -83,15 +83,18 @@ if uploaded_file:
     # 空白の行（商品コード・数量が両方空）を削除
     stock_df = stock_df[~((stock_df["商品コード"] == "") & (stock_df["数量"] == ""))]
 
-    csv_buffer = BytesIO()
-    stock_df.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
+    # 在庫アップロード用に2列目の項目名を「想定在庫数」に変更（値はマイナス数量のまま）
+    stock_df = stock_df.rename(columns={"数量": "想定在庫数"})
+
+    # Shift-JIS（Windows版：cp932）で出力
+    csv_bytes = stock_df.to_csv(index=False).encode("cp932")
 
     # JST（日本時間）で現在時刻を取得してファイル名に使用
     JST = timezone(timedelta(hours=9))
     now = datetime.now(JST).strftime('%Y-%m-%d_%H-%M')
     file_name = f"在庫アップロードデータ_{now}.csv"
 
-    st.download_button("📥 在庫アップロードCSVダウンロード", csv_buffer.getvalue(), file_name=file_name, mime="text/csv")
+    st.download_button("📥 在庫アップロードCSVダウンロード", csv_bytes, file_name=file_name, mime="text/csv")
 
     # 印刷用ピッキングリストを表示（印刷ダイアログ自動起動）
     st.subheader("🖨 ワンクリック印刷：ピッキングリスト")
